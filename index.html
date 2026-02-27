@@ -789,7 +789,41 @@
             .admin-checks { flex-direction: column; gap: 10px; }
             .modal-card { margin: 16px; }
         }
+
+        /* --- USER CREATED SUCCESS MODAL --- */
+        .success-modal-body {
+            text-align: center;
+            padding: 32px 24px;
+        }
+        .success-modal-body .success-icon {
+            width: 56px; height: 56px;
+            background: var(--toa-accent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+        }
+        .success-modal-body h4 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .success-modal-body p { font-size: 14px; color: var(--toa-gray); margin-bottom: 24px; line-height: 1.5; }
+        .success-actions { display: flex; flex-direction: column; gap: 12px; }
+        .btn-success-action {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 20px; border-radius: 8px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; border: none; width: 100%;
+        }
+        .btn-send-email { background: var(--toa-black); color: var(--toa-white); }
+        .btn-send-email:hover { background: var(--toa-dark); }
+        .btn-send-email:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-send-whatsapp { background: #25D366; color: var(--toa-white); }
+        .btn-send-whatsapp:hover { background: #1da851; }
+        .btn-success-done {
+            background: transparent; border: 1px solid var(--toa-border); color: var(--toa-gray);
+            padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; margin-top: 8px;
+        }
+        .btn-success-done:hover { background: var(--toa-light); }
+        .admin-form-hint { color: var(--toa-gray); font-size: 12px; margin-top: 4px; display: block; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -799,7 +833,7 @@
         <div class="logo">MYTOA</div>
         <div class="subtitle">The Official Agency - Internal Portal</div>
         <form id="login-form">
-            <input type="text" id="username" placeholder="Username" autocomplete="username" required>
+            <input type="email" id="username" placeholder="Email address" autocomplete="username" required>
             <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
             <button type="submit" id="login-btn">Sign In</button>
         </form>
@@ -950,8 +984,19 @@
                 <h3>Create New User</h3>
                 <div class="admin-form-row">
                     <div class="admin-form-group">
-                        <label>Username</label>
-                        <input type="text" id="new-username" placeholder="Enter username">
+                        <label>Display Name</label>
+                        <input type="text" id="new-displayname" placeholder="Enter display name">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="new-mobile" placeholder="+31612345678">
+                        <small class="admin-form-hint">International format with country code</small>
+                    </div>
+                </div>
+                <div class="admin-form-row">
+                    <div class="admin-form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="new-username" placeholder="Enter email address">
                     </div>
                     <div class="admin-form-group">
                         <label>Password</label>
@@ -989,7 +1034,9 @@
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
                                 <th>Role</th>
                                 <th>Forms</th>
                                 <th>Team</th>
@@ -1021,8 +1068,18 @@
         <div class="modal-body">
             <input type="hidden" id="edit-record-id">
             <div class="admin-form-group">
-                <label>Username</label>
-                <input type="text" id="edit-username" readonly style="background:#f5f5f0; color:#6b6b6b;">
+                <label>Email Address</label>
+                <input type="email" id="edit-username" readonly style="background:#f5f5f0; color:#6b6b6b;">
+            </div>
+            <div class="admin-form-row">
+                <div class="admin-form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="edit-displayname" placeholder="Enter display name">
+                </div>
+                <div class="admin-form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="edit-mobile" placeholder="+31612345678">
+                </div>
             </div>
             <div class="admin-form-group">
                 <label>New Password <span style="font-weight:400;color:#6b6b6b;">(leave blank to keep current)</span></label>
@@ -1081,6 +1138,30 @@
     </div>
 </div>
 
+<!-- ======= USER CREATED SUCCESS MODAL ======= -->
+<div class="modal-overlay" id="modal-user-created">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>User Created</h3>
+            <button class="modal-close" onclick="closeUserCreatedModal()">&times;</button>
+        </div>
+        <div class="success-modal-body">
+            <div class="success-icon">&#10003;</div>
+            <h4 id="created-user-name"></h4>
+            <p id="created-user-info"></p>
+            <div class="success-actions">
+                <button class="btn-success-action btn-send-email" id="btn-send-welcome-email" onclick="sendWelcomeEmail()">
+                    &#9993; Send Welcome Email
+                </button>
+                <button class="btn-success-action btn-send-whatsapp" id="btn-send-whatsapp" onclick="sendWhatsAppPassword()">
+                    &#128172; Send Password via WhatsApp
+                </button>
+            </div>
+            <button class="btn-success-done" onclick="closeUserCreatedModal()">Done</button>
+        </div>
+    </div>
+</div>
+
 <script>
 /* =======================================
    CONFIGURATION
@@ -1090,11 +1171,22 @@ const CONFIG = {
     BASE_ID: 'appI6JW9tMk59HgFp',
     USERS_TABLE: 'tblb8yJFXlHlmV9cQ',
     SIGNATURES_TABLE: 'tblwUME91QcUDVkMk',
+    EMAILJS_PUBLIC_KEY: '',
+    EMAILJS_SERVICE_ID: '',
+    EMAILJS_TEMPLATE_ID: '',
+    PORTAL_URL: 'https://toatools.github.io/portal/',
 };
 
 const API = `https://api.airtable.com/v0/${CONFIG.BASE_ID}`;
 const headers = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}` };
 const writeHeaders = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' };
+
+let lastCreatedUser = null;
+
+// Initialize EmailJS (if configured)
+if (CONFIG.EMAILJS_PUBLIC_KEY && typeof emailjs !== 'undefined') {
+    emailjs.init(CONFIG.EMAILJS_PUBLIC_KEY);
+}
 
 /* =======================================
    SESSION HELPERS
@@ -1132,6 +1224,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             const f = rec.fields;
             const session = {
                 username: f['Username'] || username,
+                displayName: f['Display Name'] || '',
                 recordId: rec.id,
                 role: f['Role'] || 'User',
                 permissions: {
@@ -1145,7 +1238,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             sessionStorage.setItem('toa_session', JSON.stringify(session));
             showPortal(session);
         } else {
-            errorEl.textContent = 'Invalid username or password.';
+            errorEl.textContent = 'Invalid email address or password.';
         }
     } catch (err) {
         errorEl.textContent = 'Connection error. Please try again.';
@@ -1159,7 +1252,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 function showPortal(session) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('portal').style.display = 'block';
-    document.getElementById('user-badge').textContent = `Signed in as ${session.username}`;
+    document.getElementById('user-badge').textContent = `Signed in as ${session.displayName || session.username}`;
 
     const isAdmin = session.role === 'Admin';
 
@@ -1381,6 +1474,8 @@ async function loadAdminUsers() {
         allRecords.forEach(rec => {
             const f = rec.fields;
             const username = f['Username'] || '';
+            const displayName = f['Display Name'] || '';
+            const mobile = f['Mobile'] || '';
             const role = f['Role'] || 'User';
             const roleBadgeClass = role === 'Admin' ? 'admin' : 'user';
             const check = '<span class="perm-check">&#10003;</span>';
@@ -1388,7 +1483,9 @@ async function loadAdminUsers() {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>${escapeHtml(username)}</strong></td>
+                <td><strong>${escapeHtml(displayName)}</strong></td>
+                <td>${escapeHtml(username)}</td>
+                <td>${escapeHtml(mobile)}</td>
                 <td><span class="role-badge ${roleBadgeClass}">${role}</span></td>
                 <td>${f['Allow Forms'] ? check : cross}</td>
                 <td>${f['Allow Team'] ? check : cross}</td>
@@ -1423,27 +1520,31 @@ async function createUser() {
     const btn = document.getElementById('btn-create-user');
     const username = document.getElementById('new-username').value.trim();
     const password = document.getElementById('new-password').value;
+    const displayName = document.getElementById('new-displayname').value.trim();
+    const mobile = document.getElementById('new-mobile').value.trim();
     const role = document.getElementById('new-role').value;
 
-    if (!username) { showToast('Username is required.'); return; }
+    if (!username) { showToast('Email address is required.'); return; }
     if (password.length < 4) { showToast('Password must be at least 4 characters.'); return; }
 
     btn.disabled = true;
     btn.textContent = 'Creating...';
 
     try {
-        // Check username uniqueness
+        // Check email uniqueness
         const checkFilter = encodeURIComponent(`{Username}="${username}"`);
         const checkRes = await fetch(`${API}/${CONFIG.USERS_TABLE}?filterByFormula=${checkFilter}`, { headers });
         const checkData = await checkRes.json();
         if (checkData.records && checkData.records.length > 0) {
-            showToast('Username already exists. Choose a different one.');
+            showToast('Email address already exists. Choose a different one.');
             return;
         }
 
         const fields = {
             'Username': username,
             'Password': password,
+            'Display Name': displayName,
+            'Mobile': mobile,
             'Role': role,
             'Allow Forms': document.getElementById('new-allow-forms').checked,
             'Allow Team': document.getElementById('new-allow-team').checked,
@@ -1463,11 +1564,26 @@ async function createUser() {
             throw new Error(err.error?.message || 'Failed to create user');
         }
 
-        showToast(`User "${username}" created successfully.`);
+        // Store created user info for success modal
+        lastCreatedUser = {
+            email: username,
+            password: password,
+            displayName: displayName,
+            mobile: mobile,
+        };
+
+        // Show success modal
+        document.getElementById('created-user-name').textContent = displayName || username;
+        document.getElementById('created-user-info').textContent = `Account created for ${username}`;
+        document.getElementById('btn-send-welcome-email').disabled = false;
+        document.getElementById('btn-send-welcome-email').innerHTML = '&#9993; Send Welcome Email';
+        document.getElementById('modal-user-created').classList.add('active');
 
         // Reset form
         document.getElementById('new-username').value = '';
         document.getElementById('new-password').value = '';
+        document.getElementById('new-displayname').value = '';
+        document.getElementById('new-mobile').value = '';
         document.getElementById('new-role').value = 'User';
         document.getElementById('new-allow-forms').checked = true;
         document.getElementById('new-allow-team').checked = true;
@@ -1495,6 +1611,8 @@ function openEditModal(recordId) {
 
     document.getElementById('edit-record-id').value = recordId;
     document.getElementById('edit-username').value = f['Username'] || '';
+    document.getElementById('edit-displayname').value = f['Display Name'] || '';
+    document.getElementById('edit-mobile').value = f['Mobile'] || '';
     document.getElementById('edit-password').value = '';
     document.getElementById('edit-role').value = f['Role'] || 'User';
     document.getElementById('edit-allow-forms').checked = !!f['Allow Forms'];
@@ -1535,7 +1653,12 @@ async function saveEditUser() {
     btn.textContent = 'Saving...';
 
     try {
+        const newDisplayName = document.getElementById('edit-displayname').value.trim();
+        const newMobile = document.getElementById('edit-mobile').value.trim();
+
         const fields = {
+            'Display Name': newDisplayName,
+            'Mobile': newMobile,
             'Role': newRole,
             'Allow Forms': document.getElementById('edit-allow-forms').checked,
             'Allow Team': document.getElementById('edit-allow-team').checked,
@@ -1562,10 +1685,11 @@ async function saveEditUser() {
         showToast('User updated successfully.');
         closeEditModal();
 
-        // If we edited ourselves, update session
+        // If we edited ourselves, update session and header
         const session = getCurrentSession();
         if (session && session.recordId === recordId) {
             session.role = newRole;
+            session.displayName = newDisplayName;
             session.permissions = {
                 forms: document.getElementById('edit-allow-forms').checked,
                 team: document.getElementById('edit-allow-team').checked,
@@ -1574,6 +1698,7 @@ async function saveEditUser() {
                 clients: document.getElementById('edit-allow-clients').checked,
             };
             sessionStorage.setItem('toa_session', JSON.stringify(session));
+            document.getElementById('user-badge').textContent = `Signed in as ${session.displayName || session.username}`;
         }
 
         loadAdminUsers();
@@ -1695,6 +1820,66 @@ async function saveChangePassword() {
 }
 
 /* =======================================
+   USER CREATED MODAL - NOTIFICATIONS
+   ======================================= */
+function closeUserCreatedModal() {
+    document.getElementById('modal-user-created').classList.remove('active');
+    lastCreatedUser = null;
+}
+
+async function sendWelcomeEmail() {
+    if (!lastCreatedUser) { showToast('No user data available.'); return; }
+
+    const btn = document.getElementById('btn-send-welcome-email');
+
+    if (!CONFIG.EMAILJS_PUBLIC_KEY || !CONFIG.EMAILJS_SERVICE_ID || !CONFIG.EMAILJS_TEMPLATE_ID) {
+        showToast('EmailJS is not configured yet. Add keys in CONFIG.');
+        return;
+    }
+
+    if (typeof emailjs === 'undefined') {
+        showToast('EmailJS SDK failed to load.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Sending...';
+
+    try {
+        await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
+            to_email: lastCreatedUser.email,
+            to_name: lastCreatedUser.displayName || lastCreatedUser.email,
+            portal_url: CONFIG.PORTAL_URL,
+            user_email: lastCreatedUser.email,
+        });
+        btn.innerHTML = '&#10003; Email Sent';
+        showToast('Welcome email sent successfully!');
+    } catch (err) {
+        console.error('EmailJS error:', err);
+        btn.disabled = false;
+        btn.innerHTML = '&#9993; Send Welcome Email';
+        showToast('Failed to send email: ' + (err.text || err.message || 'Unknown error'));
+    }
+}
+
+function sendWhatsAppPassword() {
+    if (!lastCreatedUser) { showToast('No user data available.'); return; }
+
+    if (!lastCreatedUser.mobile) {
+        showToast('No mobile number provided for this user.');
+        return;
+    }
+
+    // Strip non-digit characters from mobile number
+    const phone = lastCreatedUser.mobile.replace(/[^0-9]/g, '');
+
+    const message = `Hi ${lastCreatedUser.displayName || 'there'}!\n\nYour MYTOA Portal account has been created.\n\nLogin: ${lastCreatedUser.email}\nPassword: ${lastCreatedUser.password}\nPortal: ${CONFIG.PORTAL_URL}\n\nPlease change your password after first login.`;
+
+    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+}
+
+/* =======================================
    MODAL GLOBAL HANDLERS (Escape & Overlay)
    ======================================= */
 document.addEventListener('keydown', (e) => {
@@ -1704,6 +1889,9 @@ document.addEventListener('keydown', (e) => {
         }
         if (document.getElementById('modal-change-pw').classList.contains('active')) {
             closeChangePasswordModal();
+        }
+        if (document.getElementById('modal-user-created').classList.contains('active')) {
+            closeUserCreatedModal();
         }
     }
 });
@@ -1717,6 +1905,12 @@ document.getElementById('modal-edit-user').addEventListener('click', (e) => {
 document.getElementById('modal-change-pw').addEventListener('click', (e) => {
     if (e.target === document.getElementById('modal-change-pw')) {
         closeChangePasswordModal();
+    }
+});
+
+document.getElementById('modal-user-created').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-user-created')) {
+        closeUserCreatedModal();
     }
 });
 
