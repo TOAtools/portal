@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MYTOA ‚Äî The Official Agency Portal</title>
+    <title>MYTOA - The Official Agency Portal</title>
     <style>
         :root {
             --toa-black: #1a1a1a;
@@ -28,7 +28,7 @@
             min-height: 100vh;
         }
 
-        /* ‚îÄ‚îÄ‚îÄ LOGIN SCREEN ‚îÄ‚îÄ‚îÄ */
+        /* --- LOGIN SCREEN --- */
         #login-screen {
             display: flex;
             align-items: center;
@@ -106,7 +106,7 @@
             min-height: 20px;
         }
 
-        /* ‚îÄ‚îÄ‚îÄ PORTAL ‚îÄ‚îÄ‚îÄ */
+        /* --- PORTAL --- */
         #portal {
             display: none;
         }
@@ -248,7 +248,7 @@
             margin-bottom: 24px;
         }
 
-        /* ‚îÄ‚îÄ‚îÄ FORMS SECTION ‚îÄ‚îÄ‚îÄ */
+        /* --- FORMS SECTION --- */
         .forms-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -297,7 +297,7 @@
             line-height: 1.5;
         }
 
-        /* ‚îÄ‚îÄ‚îÄ EMBED SECTIONS ‚îÄ‚îÄ‚îÄ */
+        /* --- EMBED SECTIONS --- */
         .embed-container {
             background: var(--toa-white);
             border: 1px solid var(--toa-border);
@@ -312,7 +312,7 @@
             min-height: 600px;
         }
 
-        /* ‚îÄ‚îÄ‚îÄ EMPLOYEE / SIGNATURES SECTION ‚îÄ‚îÄ‚îÄ */
+        /* --- EMPLOYEE / SIGNATURES SECTION --- */
         .employee-selector {
             background: var(--toa-white);
             border: 1px solid var(--toa-border);
@@ -488,7 +488,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ‚îÄ‚îÄ‚îÄ ADMIN SECTION ‚îÄ‚îÄ‚îÄ */
+        /* --- ADMIN SECTION --- */
         .admin-section {
             background: var(--toa-white);
             border: 1px solid var(--toa-border);
@@ -677,7 +677,7 @@
             background: #ffebee;
         }
 
-        /* ‚îÄ‚îÄ‚îÄ MODALS ‚îÄ‚îÄ‚îÄ */
+        /* --- MODALS --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -793,11 +793,11 @@
 </head>
 <body>
 
-<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê LOGIN SCREEN ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<!-- ======= LOGIN SCREEN ======= -->
 <div id="login-screen">
     <div class="login-card">
         <div class="logo">MYTOA</div>
-        <div class="subtitle">The Official Agency ‚Äî Internal Portal</div>
+        <div class="subtitle">The Official Agency - Internal Portal</div>
         <form id="login-form">
             <input type="text" id="username" placeholder="Username" autocomplete="username" required>
             <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
@@ -807,7 +807,7 @@
     </div>
 </div>
 
-<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê PORTAL ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<!-- ======= PORTAL ======= -->
 <div id="portal">
 
     <!-- Header -->
@@ -836,7 +836,7 @@
     <!-- Content -->
     <main class="portal-content">
 
-        <!-- ‚îÄ‚îÄ FORMS TAB ‚îÄ‚îÄ -->
+        <!-- -- FORMS TAB -- -->
         <div class="tab-content active" id="tab-forms">
             <h2 class="section-title">Airtable Forms</h2>
             <p class="section-desc">Quick access to all input forms. Each form opens in a new tab.</p>
@@ -864,7 +864,7 @@
             </div>
         </div>
 
-        <!-- ‚îÄ‚îÄ TEAM & SIGNATURES TAB ‚îÄ‚îÄ -->
+        <!-- -- TEAM & SIGNATURES TAB -- -->
         <div class="tab-content" id="tab-team">
             <h2 class="section-title">Team & Signatures</h2>
             <p class="section-desc">Select a team member to view their details and email signature.</p>
@@ -901,7 +901,7 @@
             </div>
         </div>
 
-        <!-- ‚îÄ‚îÄ FORECAST DASHBOARD TAB ‚îÄ‚îÄ -->
+        <!-- -- FORECAST DASHBOARD TAB -- -->
         <div class="tab-content" id="tab-forecast">
             <h2 class="section-title">Forecast Dashboard</h2>
             <p class="section-desc">Forecast metrics overview with burn rate, project costs, invoices, and financial data.</p>
@@ -914,7 +914,7 @@
             </div>
         </div>
 
-        <!-- ‚îÄ‚îÄ RUNWAY TAB ‚îÄ‚îÄ -->
+        <!-- -- RUNWAY TAB -- -->
         <div class="tab-content" id="tab-runway">
             <h2 class="section-title">Runway Overview</h2>
             <p class="section-desc">Long-term and short-term runway metrics from the forecast history.</p>
@@ -927,7 +927,7 @@
             </div>
         </div>
 
-        <!-- ‚îÄ‚îÄ CLIENT DATABASE TAB ‚îÄ‚îÄ -->
+        <!-- -- CLIENT DATABASE TAB -- -->
         <div class="tab-content" id="tab-clients">
             <h2 class="section-title">Client Database</h2>
             <p class="section-desc">Browse the full client list with contacts and account managers.</p>
@@ -940,7 +940,7 @@
             </div>
         </div>
 
-        <!-- ‚îÄ‚îÄ ADMIN TAB ‚îÄ‚îÄ -->
+        <!-- -- ADMIN TAB -- -->
         <div class="tab-content" id="tab-admin">
             <h2 class="section-title">Admin Panel</h2>
             <p class="section-desc">Manage portal users, roles, and permissions.</p>
@@ -1011,7 +1011,7 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê EDIT USER MODAL ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<!-- ======= EDIT USER MODAL ======= -->
 <div class="modal-overlay" id="modal-edit-user">
     <div class="modal-card">
         <div class="modal-header">
@@ -1053,7 +1053,7 @@
     </div>
 </div>
 
-<!-- ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê CHANGE PASSWORD MODAL ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê -->
+<!-- ======= CHANGE PASSWORD MODAL ======= -->
 <div class="modal-overlay" id="modal-change-pw">
     <div class="modal-card">
         <div class="modal-header">
@@ -1082,9 +1082,9 @@
 </div>
 
 <script>
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    CONFIGURATION
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 const CONFIG = {
     AIRTABLE_TOKEN: 'pat1kPT1w7gECO8vm.dc0d4c28fb7a9ff0e69820eafc80bddce0bfdd0426ff40e411649b72fed6105e',
     BASE_ID: 'appI6JW9tMk59HgFp',
@@ -1096,9 +1096,9 @@ const API = `https://api.airtable.com/v0/${CONFIG.BASE_ID}`;
 const headers = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}` };
 const writeHeaders = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' };
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    SESSION HELPERS
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 function getCurrentSession() {
     try {
         const raw = sessionStorage.getItem('toa_session');
@@ -1108,9 +1108,9 @@ function getCurrentSession() {
     }
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    AUTHENTICATION
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('login-btn');
@@ -1212,9 +1212,9 @@ function logout() {
     if (session) showPortal(session);
 })();
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    NAVIGATION TABS
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -1229,9 +1229,9 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     });
 });
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    TEAM & SIGNATURES
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 let signaturesData = [];
 
 async function loadSignatures() {
@@ -1331,9 +1331,9 @@ document.getElementById('employee-select').addEventListener('change', (e) => {
     detail.classList.add('active');
 });
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    COPY SIGNATURE HTML
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 function copySignature() {
     const idx = document.getElementById('employee-select').value;
     if (idx === '') return;
@@ -1351,9 +1351,9 @@ function copySignature() {
     });
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-   ADMIN ‚Äî LOAD USERS
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+/* =======================================
+   ADMIN - LOAD USERS
+   ======================================= */
 let allPortalUsers = [];
 
 async function loadAdminUsers() {
@@ -1416,9 +1416,9 @@ function escapeHtml(str) {
     return div.innerHTML;
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-   ADMIN ‚Äî CREATE USER
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+/* =======================================
+   ADMIN - CREATE USER
+   ======================================= */
 async function createUser() {
     const btn = document.getElementById('btn-create-user');
     const username = document.getElementById('new-username').value.trim();
@@ -1485,9 +1485,9 @@ async function createUser() {
     }
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-   ADMIN ‚Äî EDIT USER MODAL
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+/* =======================================
+   ADMIN - EDIT USER MODAL
+   ======================================= */
 function openEditModal(recordId) {
     const rec = allPortalUsers.find(r => r.id === recordId);
     if (!rec) return;
@@ -1586,9 +1586,9 @@ async function saveEditUser() {
     }
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
-   ADMIN ‚Äî DELETE USER
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+/* =======================================
+   ADMIN - DELETE USER
+   ======================================= */
 async function deleteUser(recordId, username) {
     const session = getCurrentSession();
 
@@ -1631,9 +1631,9 @@ async function deleteUser(recordId, username) {
     }
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    CHANGE PASSWORD (SELF-SERVICE)
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 function openChangePasswordModal() {
     document.getElementById('pw-current').value = '';
     document.getElementById('pw-new').value = '';
@@ -1694,9 +1694,9 @@ async function saveChangePassword() {
     }
 }
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    MODAL GLOBAL HANDLERS (Escape & Overlay)
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         if (document.getElementById('modal-edit-user').classList.contains('active')) {
@@ -1720,9 +1720,9 @@ document.getElementById('modal-change-pw').addEventListener('click', (e) => {
     }
 });
 
-/* ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê
+/* =======================================
    TOAST
-   ‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê‚ïê */
+   ======================================= */
 function showToast(msg) {
     const toast = document.getElementById('toast');
     toast.textContent = msg;
