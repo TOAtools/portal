@@ -1171,9 +1171,9 @@ const CONFIG = {
     BASE_ID: 'appI6JW9tMk59HgFp',
     USERS_TABLE: 'tblb8yJFXlHlmV9cQ',
     SIGNATURES_TABLE: 'tblwUME91QcUDVkMk',
-    EMAILJS_PUBLIC_KEY: '',
-    EMAILJS_SERVICE_ID: '',
-    EMAILJS_TEMPLATE_ID: '',
+    EMAILJS_PUBLIC_KEY: 'KTD5rjhJHxpLLzazD',
+    EMAILJS_SERVICE_ID: 'service_2e84owl',
+    EMAILJS_TEMPLATE_ID: 'template_07w1vld',
     PORTAL_URL: 'https://toatools.github.io/portal/',
 };
 
@@ -1847,7 +1847,7 @@ async function sendWelcomeEmail() {
 
     try {
         await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, CONFIG.EMAILJS_TEMPLATE_ID, {
-            to_email: lastCreatedUser.email,
+            email: lastCreatedUser.email,
             to_name: lastCreatedUser.displayName || lastCreatedUser.email,
             portal_url: CONFIG.PORTAL_URL,
             user_email: lastCreatedUser.email,
