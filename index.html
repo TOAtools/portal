@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYTOA — The Official Agency Portal</title>
+    <style>
+        :root {
+            --toa-black: #1a1a1a;
+            --toa-dark: #2d2d2d;
+            --toa-gray: #6b6b6b;
+            --toa-light: #f5f5f0;
+            --toa-accent: #c8e64e;
+            --toa-accent-dark: #a8c42e;
+            --toa-white: #ffffff;
+            --toa-border: #e0e0d8;
+            --radius: 12px;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--toa-light);
+            color: var(--toa-black);
+            min-height: 100vh;
+        }
+
+        /* LOGIN SCREEN */
+        #login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--toa-black);
+        }
+
+        .login-card {
+            background: var(--toa-white);
+            border-radius: var(--radius);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-card .logo { font-size: 32px; font-weight: 800; letter-spacing: 3px; color: var(--toa-black); margin-bottom: 8px; }
+        .login-card .subtitle { color: var(--toa-gray); font-size: 14px; margin-bottom: 32px; }
+
+        .login-card input {
+            width: 100%; padding: 14px 16px; border: 2px solid var(--toa-border);
+            border-radius: 8px; font-size: 15px; margin-bottom: 12px;
+            transition: border-color 0.2s; outline: none;
+        }
+        .login-card input:focus { border-color: var(--toa-accent); }
+
+        .login-card button {
+            width: 100%; padding: 14px; background: var(--toa-black); color: var(--toa-white);
+            border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s; margin-top: 4px;
+        }
+        .login-card button:hover { background: var(--toa-dark); }
+        .login-card button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .login-error { color: #d32f2f; font-size: 13px; margin-top: 12px; min-height: 20px; }
+
+        /* PORTAL */
+        #portal { display: none; }
+
+        .portal-header {
+            background: var(--toa-black); color: var(--toa-white); padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px; position: sticky; top: 0; z-index: 100;
+        }
+        .portal-header .logo { font-size: 20px; font-weight: 800; letter-spacing: 2px; display: flex; align-items: center; gap: 12px; }
+        .portal-header .logo span { color: var(--toa-accent); font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        .user-badge { font-size: 13px; color: var(--toa-gray); }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--toa-white); padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
+
+        .portal-nav { background: var(--toa-white); border-bottom: 1px solid var(--toa-border); padding: 0 32px; display: flex; gap: 0; overflow-x: auto; }
+        .nav-tab { padding: 16px 24px; font-size: 14px; font-weight: 500; color: var(--toa-gray); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
+        .nav-tab:hover { color: var(--toa-black); }
+        .nav-tab.active { color: var(--toa-black); border-bottom-color: var(--toa-accent); font-weight: 600; }
+
+        .portal-content { max-width: 1200px; margin: 0 auto; padding: 32px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .section-desc { color: var(--toa-gray); font-size: 14px; margin-bottom: 24px; }
+
+        .forms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .form-card { background: var(--toa-white); border: 1px solid var(--toa-border); border-radius: var(--radius); padding: 28px 24px; transition: all 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
+        .form-card:hover { box-shadow: var(--shadow); border-color: var(--toa-accent); transform: translateY(-2px); }
+        .form-card .form-icon { width: 44px; height: 44px; background: var(--toa-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+        .form-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .form-card p { font-size: 13px; color: var(--toa-gray); line-height: 1.5; }
+
+        .embed-container { background: var(--toa-white); border: 1px solid var(--toa-border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+        .embed-container iframe { width: 100%; border: none; min-height: 600px; }
+
+        .employee-selector { background: var(--toa-white); border: 1px solid var(--toa-border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+        .employee-selector label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+        .employee-selector select { width: 100%; max-width: 400px; padding: 12px 16px; border: 2px solid var(--toa-border); border-radius: 8px; font-size: 15px; outline: none; cursor: pointer; background: var(--toa-white); transition: border-color 0.2s; }
+        .employee-selector select:focus { border-color: var(--toa-accent); }
+
+        .employee-detail { display: none; }
+        .employee-detail.active { display: block; }
+        .employee-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .info-card { background: var(--toa-white); border: 1px solid var(--toa-border); border-radius: var(--radius); padding: 20px; }
+        .info-card .info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--toa-gray); margin-bottom: 6px; }
+        .info-card .info-value { font-size: 15px; font-weight: 500; word-break: break-all; }
+        .info-card .info-value a { color: var(--toa-black); text-decoration: underline; text-underline-offset: 2px; }
+
+        .signature-section { background: var(--toa-white); border: 1px solid var(--toa-border); border-radius: var(--radius); overflow: hidden; }
+        .signature-section-header { padding: 16px 20px; font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--toa-border); display: flex; align-items: center; justify-content: space-between; }
+        .signature-preview { padding: 24px; background: #fafafa; }
+        .signature-actions { display: flex; gap: 8px; }
+        .btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .btn-copy { background: var(--toa-black); color: var(--toa-white); border: none; }
+        .btn-copy:hover { background: var(--toa-dark); }
+        .btn-preview { background: transparent; border: 1px solid var(--toa-border); color: var(--toa-black); }
+        .btn-preview:hover { background: var(--toa-light); }
+
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--toa-black); color: var(--toa-white); padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 1000; transition: transform 0.3s ease; box-shadow: var(--shadow-lg); }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        .loading { display: flex; align-items: center; justify-content: center; padding: 48px; color: var(--toa-gray); font-size: 14px; }
+        .spinner { width: 20px; height: 20px; border: 2px solid var(--toa-border); border-top-color: var(--toa-black); border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .portal-content { padding: 20px 16px; }
+            .portal-header { padding: 0 16px; }
+            .portal-nav { padding: 0 16px; }
+            .nav-tab { padding: 14px 16px; font-size: 13px; }
+            .employee-info-grid { grid-template-columns: 1fr; }
+            .forms-grid { grid-template-columns: 1fr; }
+            .login-card { margin: 16px; padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-card">
+        <div class="logo">MYTOA</div>
+        <div class="subtitle">The Official Agency — Internal Portal</div>
+        <form id="login-form">
+            <input type="text" id="username" placeholder="Username" autocomplete="username" required>
+            <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+            <button type="submit" id="login-btn">Sign In</button>
+        </form>
+        <div class="login-error" id="login-error"></div>
+    </div>
+</div>
+
+<div id="portal">
+    <header class="portal-header">
+        <div class="logo">MYTOA <span>Portal</span></div>
+        <div class="header-actions">
+            <span class="user-badge" id="user-badge"></span>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+    </header>
+
+    <nav class="portal-nav">
+        <button class="nav-tab active" data-tab="forms">Forms</button>
+        <button class="nav-tab" data-tab="team">Team & Signatures</button>
+        <button class="nav-tab" data-tab="forecast">Forecast Dashboard</button>
+        <button class="nav-tab" data-tab="runway">Runway</button>
+        <button class="nav-tab" data-tab="clients">Client Database</button>
+    </nav>
+
+    <main class="portal-content">
+        <div class="tab-content active" id="tab-forms">
+            <h2 class="section-title">Airtable Forms</h2>
+            <p class="section-desc">Quick access to all input forms. Each form opens in a new tab.</p>
+            <div class="forms-grid">
+                <a class="form-card" href="https://airtable.com/appI6JW9tMk59HgFp/pagdKAoE3naGPPCRH/form" target="_blank" rel="noopener">
+                    <div class="form-icon">💼</div>
+                    <h3>New Client Entry</h3>
+                    <p>Register a new client in the database with all relevant details.</p>
+                </a>
+                <a class="form-card" href="https://airtable.com/appI6JW9tMk59HgFp/pagfk7u6bgWXE5SsU/form" target="_blank" rel="noopener">
+                    <div class="form-icon">📋</div>
+                    <h3>Project Entry</h3>
+                    <p>Create a new project entry linked to clients and team members.</p>
+                </a>
+                <a class="form-card" href="https://airtable.com/appI6JW9tMk59HgFp/pagVI0BrH0qKZybe2/form" target="_blank" rel="noopener">
+                    <div class="form-icon">🤝</div>
+                    <h3>New Freelancers & Suppliers</h3>
+                    <p>Add freelancers and suppliers to the contact database.</p>
+                </a>
+                <a class="form-card" href="https://airtable.com/appI6JW9tMk59HgFp/pagw2K0L5jWz0Du2a/form" target="_blank" rel="noopener">
+                    <div class="form-icon">🎉</div>
+                    <h3>Welcome to TOA</h3>
+                    <p>Onboarding form for new team members joining The Official Agency.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-team">
+            <h2 class="section-title">Team & Signatures</h2>
+            <p class="section-desc">Select a team member to view their details and email signature.</p>
+            <div class="employee-selector">
+                <label for="employee-select">Select team member</label>
+                <select id="employee-select"><option value="">Choose a person...</option></select>
+            </div>
+            <div id="employee-loading" class="loading" style="display:none;"><div class="spinner"></div>Loading team data...</div>
+            <div id="employee-detail" class="employee-detail">
+                <div class="employee-info-grid" id="employee-info-grid"></div>
+                <div class="signature-section" id="signature-section" style="display:none;">
+                    <div class="signature-section-header">
+                        <span>Email Signature</span>
+                        <div class="signature-actions">
+                            <button class="btn-sm btn-copy" onclick="copySignature()">Copy HTML</button>
+                            <a class="btn-sm btn-preview" id="sig-preview-link" href="#" target="_blank" rel="noopener">Open Preview</a>
+                        </div>
+                    </div>
+                    <div class="signature-preview" id="signature-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-forecast">
+            <h2 class="section-title">Forecast Dashboard</h2>
+            <p class="section-desc">Forecast metrics overview with burn rate, project costs, invoices, and financial data.</p>
+            <div class="embed-container"><iframe src="https://airtable.com/appI6JW9tMk59HgFp/shr0zHmboZ8Dz7xv8/embed" loading="lazy" style="min-height:700px;"></iframe></div>
+        </div>
+
+        <div class="tab-content" id="tab-runway">
+            <h2 class="section-title">Runway Overview</h2>
+            <p class="section-desc">Long-term and short-term runway metrics from the forecast history.</p>
+            <div class="embed-container"><iframe src="https://airtable.com/appI6JW9tMk59HgFp/shrLFPb1fIc4PuIHS/embed" loading="lazy" style="min-height:600px;"></iframe></div>
+        </div>
+
+        <div class="tab-content" id="tab-clients">
+            <h2 class="section-title">Client Database</h2>
+            <p class="section-desc">Browse the full client list with contacts and account managers.</p>
+            <div class="embed-container"><iframe src="https://airtable.com/appI6JW9tMk59HgFp/shrELxcqCWD4JUXds/embed" loading="lazy" style="min-height:700px;"></iframe></div>
+        </div>
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONFIG = {
+    AIRTABLE_TOKEN: 'pat1kPT1w7gECO8vm.dc0d4c28fb7a9ff0e69820eafc80bddce0bfdd0426ff40e411649b72fed6105e',
+    BASE_ID: 'appI6JW9tMk59HgFp',
+    USERS_TABLE: 'tblb8yJFXlHlmV9cQ',
+    SIGNATURES_TABLE: 'tblwUME91QcUDVkMk',
+};
+
+const API = `https://api.airtable.com/v0/${CONFIG.BASE_ID}`;
+const headers = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}` };
+
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    const errorEl = document.getElementById('login-error');
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    errorEl.textContent = '';
+    try {
+        const filter = encodeURIComponent(`AND({Username}="${username}",{Password}="${password}")`);
+        const res = await fetch(`${API}/${CONFIG.USERS_TABLE}?filterByFormula=${filter}`, { headers });
+        const data = await res.json();
+        if (data.records && data.records.length > 0) {
+            sessionStorage.setItem('toa_user', username);
+            showPortal(username);
+        } else {
+            errorEl.textContent = 'Invalid username or password.';
+        }
+    } catch (err) {
+        errorEl.textContent = 'Connection error. Please try again.';
+        console.error(err);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+    }
+});
+
+function showPortal(username) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('portal').style.display = 'block';
+    document.getElementById('user-badge').textContent = `Signed in as ${username}`;
+    loadSignatures();
+}
+
+function logout() {
+    sessionStorage.removeItem('toa_user');
+    document.getElementById('portal').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('login-error').textContent = '';
+}
+
+(function checkSession() {
+    const user = sessionStorage.getItem('toa_user');
+    if (user) showPortal(user);
+})();
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+let signaturesData = [];
+
+async function loadSignatures() {
+    const loading = document.getElementById('employee-loading');
+    const select = document.getElementById('employee-select');
+    loading.style.display = 'flex';
+    try {
+        const res = await fetch(`${API}/${CONFIG.SIGNATURES_TABLE}?fields%5B%5D=Signature+Name&fields%5B%5D=First+Name+(Single)+(from+Employee)&fields%5B%5D=Last+Name+(from+Employee)&fields%5B%5D=Phone+(from+Employee)&fields%5B%5D=Title+(from+Employee)&fields%5B%5D=LinkedIn+(from+Employee)&fields%5B%5D=Website&fields%5B%5D=Instagram&fields%5B%5D=HTML&fields%5B%5D=Preview+URL`, { headers });
+        const data = await res.json();
+        signaturesData = data.records || [];
+        select.innerHTML = '<option value="">Choose a person...</option>';
+        signaturesData.forEach((rec, i) => {
+            const name = rec.fields['Signature Name'] || `${(rec.fields['First Name (Single) (from Employee)'] || [''])[0]} ${(rec.fields['Last Name (from Employee)'] || [''])[0]}`.trim();
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = name;
+            select.appendChild(opt);
+        });
+    } catch (err) {
+        console.error('Failed to load signatures:', err);
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+document.getElementById('employee-select').addEventListener('change', (e) => {
+    const idx = e.target.value;
+    const detail = document.getElementById('employee-detail');
+    const sigSection = document.getElementById('signature-section');
+    if (idx === '') { detail.classList.remove('active'); return; }
+    const rec = signaturesData[idx];
+    const f = rec.fields;
+    const firstName = (f['First Name (Single) (from Employee)'] || ['—'])[0];
+    const lastName = (f['Last Name (from Employee)'] || ['—'])[0];
+    const phone = (f['Phone (from Employee)'] || ['—'])[0];
+    const title = (f['Title (from Employee)'] || ['—'])[0];
+    const linkedin = (f['LinkedIn (from Employee)'] || [''])[0];
+    const website = f['Website'] || '';
+    const instagram = f['Instagram'] || '';
+    const html = f['HTML'] || '';
+    const previewUrl = f['Preview URL'] || '';
+    const grid = document.getElementById('employee-info-grid');
+    grid.innerHTML = `
+        <div class="info-card"><div class="info-label">Name</div><div class="info-value">${firstName} ${lastName}</div></div>
+        <div class="info-card"><div class="info-label">Title</div><div class="info-value">${title}</div></div>
+        <div class="info-card"><div class="info-label">Phone</div><div class="info-value">${phone}</div></div>
+        <div class="info-card"><div class="info-label">LinkedIn</div><div class="info-value">${linkedin ? `<a href="${linkedin}" target="_blank">${linkedin}</a>` : '—'}</div></div>
+        <div class="info-card"><div class="info-label">Website</div><div class="info-value">${website ? `<a href="${website}" target="_blank">${website}</a>` : '—'}</div></div>
+        <div class="info-card"><div class="info-label">Instagram</div><div class="info-value">${instagram ? `<a href="${instagram}" target="_blank">${instagram}</a>` : '—'}</div></div>
+    `;
+    if (html) {
+        sigSection.style.display = 'block';
+        document.getElementById('signature-preview').innerHTML = html;
+        const previewLink = document.getElementById('sig-preview-link');
+        if (previewUrl) { previewLink.href = previewUrl; previewLink.style.display = 'inline-flex'; }
+        else { previewLink.style.display = 'none'; }
+    } else { sigSection.style.display = 'none'; }
+    detail.classList.add('active');
+});
+
+function copySignature() {
+    const idx = document.getElementById('employee-select').value;
+    if (idx === '') return;
+    const html = signaturesData[idx].fields['HTML'] || '';
+    navigator.clipboard.writeText(html).then(() => {
+        showToast('Signature HTML copied to clipboard!');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = html;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Signature HTML copied to clipboard!');
+    });
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
