@@ -106,6 +106,127 @@
             min-height: 20px;
         }
 
+        /* --- MY MEETINGS --- */
+        .meetings-services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .service-card {
+            background: var(--toa-white);
+            border: 1px solid var(--toa-border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+
+        .service-card:not(.service-coming-soon):hover {
+            box-shadow: var(--shadow);
+        }
+
+        .service-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .service-card-header h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--toa-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-status {
+            font-size: 12px;
+            color: var(--toa-gray);
+        }
+
+        .service-status.connected {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .btn-service-connect {
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            background: var(--toa-black);
+            color: var(--toa-white);
+            border: none;
+        }
+
+        .btn-service-connect:hover:not(:disabled) {
+            background: var(--toa-dark);
+        }
+
+        .btn-service-connect:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: var(--toa-gray);
+        }
+
+        .btn-service-connect.connected {
+            background: transparent;
+            border: 1px solid #e57373;
+            color: #d32f2f;
+        }
+
+        .btn-service-connect.connected:hover {
+            background: #ffebee;
+        }
+
+        .service-coming-soon {
+            opacity: 0.6;
+        }
+
+        .meetings-action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .source-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .source-badge.google-meet { background: #e0f2f1; color: #00695c; }
+        .source-badge.manual { background: var(--toa-light); color: var(--toa-gray); }
+        .source-badge.fyxer { background: #e8eaf6; color: #283593; }
+        .source-badge.plaud { background: #fce4ec; color: #c62828; }
+
+        /* --- MFA SCREEN --- */
+        #mfa-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--toa-black);
+        }
+
         /* --- PORTAL --- */
         #portal {
             display: none;
@@ -824,6 +945,9 @@
         .admin-form-hint { color: var(--toa-gray); font-size: 12px; margin-top: 4px; display: block; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/otpauth@9/dist/otpauth.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1/build/qrcode.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -841,6 +965,28 @@
     </div>
 </div>
 
+<!-- ======= MFA VERIFICATION SCREEN ======= -->
+<div id="mfa-screen" style="display:none;">
+    <div class="login-card">
+        <div class="logo">MYTOA</div>
+        <div class="subtitle">Two-Factor Authentication</div>
+        <p style="font-size:14px; color:var(--toa-gray); margin-bottom:20px;">
+            Enter the 6-digit code from your authenticator app.
+        </p>
+        <form id="mfa-form">
+            <input type="text" id="mfa-code" placeholder="000000"
+                   maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                   autocomplete="one-time-code" required
+                   style="text-align:center; font-size:24px; letter-spacing:8px; font-weight:600;">
+            <button type="submit" id="mfa-btn">Verify</button>
+        </form>
+        <div class="login-error" id="mfa-error"></div>
+        <button onclick="cancelMfa()" style="background:none; border:none; color:var(--toa-gray); font-size:13px; cursor:pointer; margin-top:16px; text-decoration:underline;">
+            Back to sign in
+        </button>
+    </div>
+</div>
+
 <!-- ======= PORTAL ======= -->
 <div id="portal">
 
@@ -853,6 +999,7 @@
         <div class="header-actions">
             <span class="user-badge" id="user-badge"></span>
             <button class="btn-change-pw" onclick="openChangePasswordModal()">Change Password</button>
+            <button class="btn-change-pw" id="btn-mfa-header" onclick="openMfaSettings()" style="display:none;">Set Up MFA</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
     </header>
@@ -864,6 +1011,7 @@
         <button class="nav-tab" data-tab="forecast">Forecast Dashboard</button>
         <button class="nav-tab" data-tab="runway">Runway</button>
         <button class="nav-tab" data-tab="clients">Client Database</button>
+        <button class="nav-tab" data-tab="meetings">My Meetings</button>
         <button class="nav-tab" data-tab="admin" style="display:none;">Admin</button>
     </nav>
 
@@ -974,6 +1122,96 @@
             </div>
         </div>
 
+        <!-- -- MY MEETINGS TAB -- -->
+        <div class="tab-content" id="tab-meetings">
+            <h2 class="section-title">My Meetings</h2>
+            <p class="section-desc">View your meeting transcripts and connect services to auto-import them.</p>
+
+            <!-- Connected Services -->
+            <div class="meetings-services-grid">
+                <div class="service-card" id="service-google-meet">
+                    <div class="service-card-header">
+                        <div class="service-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#00897B"/>
+                                <path d="M15.5 8.5l-3 2.5V8.5H7.5v7h5V13l3 2.5v-7z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4>Google Meet</h4>
+                            <p class="service-status" id="google-meet-status">Not connected</p>
+                        </div>
+                    </div>
+                    <button class="btn-service-connect" id="btn-connect-google" onclick="connectGoogleMeet()">Connect</button>
+                </div>
+
+                <div class="service-card service-coming-soon">
+                    <div class="service-card-header">
+                        <div class="service-icon">
+                            <span style="font-size:20px;">&#129302;</span>
+                        </div>
+                        <div>
+                            <h4>Fyxer.ai</h4>
+                            <p class="service-status">Coming Soon</p>
+                        </div>
+                    </div>
+                    <button class="btn-service-connect" disabled>Coming Soon</button>
+                </div>
+
+                <div class="service-card service-coming-soon">
+                    <div class="service-card-header">
+                        <div class="service-icon">
+                            <span style="font-size:20px;">&#127908;</span>
+                        </div>
+                        <div>
+                            <h4>Plaud</h4>
+                            <p class="service-status">Coming Soon</p>
+                        </div>
+                    </div>
+                    <button class="btn-service-connect" disabled>Coming Soon</button>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="meetings-action-bar">
+                <button class="btn-create" onclick="openUploadTranscriptModal()">&#128196; Upload Transcript</button>
+                <button class="btn-create" id="btn-sync-google" onclick="syncGoogleMeetTranscripts()" style="display:none;">&#128260; Sync from Google Meet</button>
+            </div>
+
+            <!-- Loading -->
+            <div id="meetings-loading" class="loading" style="display:none;">
+                <div class="spinner"></div>
+                Loading meetings...
+            </div>
+
+            <!-- Empty State -->
+            <div id="meetings-empty" style="display:none; text-align:center; padding:48px 24px; color:var(--toa-gray);">
+                <div style="font-size:48px; margin-bottom:16px;">&#128466;</div>
+                <h3 style="font-size:18px; font-weight:600; margin-bottom:8px; color:var(--toa-black);">No meetings yet</h3>
+                <p style="font-size:14px; line-height:1.6;">
+                    Connect Google Meet to import transcripts automatically,<br>or upload a transcript manually.
+                </p>
+            </div>
+
+            <!-- Meetings Table -->
+            <div class="admin-section" id="meetings-table-section" style="display:none;">
+                <div class="admin-table-wrap">
+                    <table class="admin-table" id="meetings-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Source</th>
+                                <th>Duration</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meetings-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- -- ADMIN TAB -- -->
         <div class="tab-content" id="tab-admin">
             <h2 class="section-title">Admin Panel</h2>
@@ -1043,6 +1281,7 @@
                                 <th>Forecast</th>
                                 <th>Runway</th>
                                 <th>Clients</th>
+                                <th>MFA</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1162,6 +1401,154 @@
     </div>
 </div>
 
+<!-- ======= MFA SETUP MODAL ======= -->
+<div class="modal-overlay" id="modal-mfa-setup">
+    <div class="modal-card" style="max-width:420px;">
+        <div class="modal-header">
+            <h3>Set Up Two-Factor Authentication</h3>
+            <button class="modal-close" onclick="closeMfaSetupModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:24px;">
+            <!-- Step 1: Show QR code -->
+            <div id="mfa-setup-step1">
+                <p style="font-size:14px; color:var(--toa-gray); margin-bottom:16px;">
+                    Scan this QR code with your authenticator app (1Password, Google Authenticator, etc.).
+                </p>
+                <div id="mfa-qr-container" style="text-align:center; margin:20px 0;">
+                    <canvas id="mfa-qr-canvas"></canvas>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:12px; color:var(--toa-gray); display:block; margin-bottom:4px;">
+                        Or enter this key manually:
+                    </label>
+                    <code id="mfa-secret-display" style="display:block; background:var(--toa-light); padding:10px; border-radius:6px; font-size:14px; letter-spacing:2px; word-break:break-all; text-align:center; user-select:all;"></code>
+                </div>
+                <p style="font-size:14px; color:var(--toa-gray); margin-bottom:12px;">
+                    Enter the 6-digit code shown in your app to verify:
+                </p>
+                <input type="text" id="mfa-setup-code" placeholder="000000"
+                       maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                       style="text-align:center; font-size:20px; letter-spacing:6px; font-weight:600; width:100%; padding:14px 16px; border:2px solid var(--toa-border); border-radius:8px; outline:none;">
+                <div id="mfa-setup-error" style="color:#d32f2f; font-size:13px; margin-top:8px; min-height:20px;"></div>
+                <div class="modal-actions">
+                    <button class="btn-modal-cancel" onclick="closeMfaSetupModal()">Cancel</button>
+                    <button class="btn-modal-save" id="btn-verify-mfa-setup" onclick="verifyMfaSetup()">Enable MFA</button>
+                </div>
+            </div>
+            <!-- Step 2: Success -->
+            <div id="mfa-setup-step2" style="display:none; text-align:center; padding:20px 0;">
+                <div style="width:56px; height:56px; background:var(--toa-accent); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:28px;">&#10003;</div>
+                <h4 style="font-size:18px; font-weight:600; margin-bottom:8px;">MFA Enabled</h4>
+                <p style="font-size:14px; color:var(--toa-gray); margin-bottom:20px;">
+                    Two-factor authentication is now active on your account.
+                </p>
+                <button class="btn-modal-save" onclick="closeMfaSetupModal()">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======= MFA DISABLE MODAL ======= -->
+<div class="modal-overlay" id="modal-mfa-disable">
+    <div class="modal-card" style="max-width:400px;">
+        <div class="modal-header">
+            <h3>Disable Two-Factor Authentication</h3>
+            <button class="modal-close" onclick="closeMfaDisableModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:24px;">
+            <p style="font-size:14px; color:var(--toa-gray); margin-bottom:16px;">
+                Enter your current 6-digit code to confirm you want to disable MFA.
+            </p>
+            <input type="text" id="mfa-disable-code" placeholder="000000"
+                   maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                   style="text-align:center; font-size:20px; letter-spacing:6px; font-weight:600; width:100%; padding:14px 16px; border:2px solid var(--toa-border); border-radius:8px; outline:none;">
+            <div id="mfa-disable-error" style="color:#d32f2f; font-size:13px; margin-top:8px; min-height:20px;"></div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeMfaDisableModal()">Cancel</button>
+                <button class="btn-modal-save" id="btn-confirm-disable-mfa" onclick="confirmDisableMfa()" style="background:#d32f2f;">Disable MFA</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======= UPLOAD TRANSCRIPT MODAL ======= -->
+<div class="modal-overlay" id="modal-upload-transcript">
+    <div class="modal-card" style="max-width:560px;">
+        <div class="modal-header">
+            <h3>Upload Transcript</h3>
+            <button class="modal-close" onclick="closeUploadTranscriptModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:24px;">
+            <div class="admin-form-group">
+                <label for="transcript-title">Meeting Title</label>
+                <input type="text" id="transcript-title" placeholder="e.g., Weekly standup with client" style="max-width:100%;">
+            </div>
+            <div class="admin-form-row">
+                <div class="admin-form-group">
+                    <label for="transcript-date">Meeting Date</label>
+                    <input type="date" id="transcript-date" style="max-width:100%;">
+                </div>
+                <div class="admin-form-group">
+                    <label for="transcript-duration">Duration (optional)</label>
+                    <input type="text" id="transcript-duration" placeholder="e.g., 45 min" style="max-width:100%;">
+                </div>
+            </div>
+            <div class="admin-form-group">
+                <label for="transcript-participants">Participants (optional)</label>
+                <input type="text" id="transcript-participants" placeholder="e.g., Alice, Bob, Charlie" style="max-width:100%;">
+            </div>
+            <div class="admin-form-group">
+                <label for="transcript-content">Transcript Content</label>
+                <textarea id="transcript-content" rows="10" placeholder="Paste the full transcript here..."
+                    style="width:100%; padding:12px 14px; border:2px solid var(--toa-border); border-radius:8px; font-size:14px; font-family:inherit; outline:none; resize:vertical; transition:border-color 0.2s;"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeUploadTranscriptModal()">Cancel</button>
+                <button class="btn-modal-save" id="btn-save-transcript" onclick="saveManualTranscript()">Save Transcript</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======= VIEW TRANSCRIPT MODAL ======= -->
+<div class="modal-overlay" id="modal-view-transcript">
+    <div class="modal-card" style="max-width:700px; max-height:80vh; display:flex; flex-direction:column;">
+        <div class="modal-header">
+            <h3 id="view-transcript-title">Transcript</h3>
+            <button class="modal-close" onclick="closeViewTranscriptModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="overflow-y:auto; flex:1; padding:24px;">
+            <div style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap;">
+                <div class="info-card" style="flex:1; min-width:120px;">
+                    <div class="info-label">Date</div>
+                    <div class="info-value" id="view-transcript-date"></div>
+                </div>
+                <div class="info-card" style="flex:1; min-width:120px;">
+                    <div class="info-label">Source</div>
+                    <div class="info-value" id="view-transcript-source"></div>
+                </div>
+                <div class="info-card" style="flex:1; min-width:120px;">
+                    <div class="info-label">Duration</div>
+                    <div class="info-value" id="view-transcript-duration"></div>
+                </div>
+            </div>
+            <div id="view-transcript-participants-section" style="display:none; margin-bottom:16px;">
+                <div class="info-card">
+                    <div class="info-label">Participants</div>
+                    <div class="info-value" id="view-transcript-participants-value"></div>
+                </div>
+            </div>
+            <div style="background:var(--toa-light); border:1px solid var(--toa-border); border-radius:8px; padding:20px;">
+                <pre id="view-transcript-content" style="white-space:pre-wrap; word-wrap:break-word; font-family:inherit; font-size:14px; line-height:1.7; margin:0; color:var(--toa-black);"></pre>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeViewTranscriptModal()">Close</button>
+                <button class="btn-modal-save" onclick="copyTranscriptContent()">Copy Transcript</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 /* =======================================
    CONFIGURATION
@@ -1175,6 +1562,8 @@ const CONFIG = {
     EMAILJS_SERVICE_ID: 'service_2e84owl',
     EMAILJS_TEMPLATE_ID: 'template_07w1vld',
     PORTAL_URL: 'https://toatools.github.io/portal/',
+    MEETINGS_TABLE: '',  // Add Airtable table ID after creating "Meeting Transcripts" table
+    GOOGLE_CLIENT_ID: '',  // Add Google OAuth Client ID after creating Google Cloud project
 };
 
 const API = `https://api.airtable.com/v0/${CONFIG.BASE_ID}`;
@@ -1182,6 +1571,9 @@ const headers = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}` };
 const writeHeaders = { 'Authorization': `Bearer ${CONFIG.AIRTABLE_TOKEN}`, 'Content-Type': 'application/json' };
 
 let lastCreatedUser = null;
+let pendingMfaUser = null;
+let meetingsData = [];
+let googleAccessToken = sessionStorage.getItem('toa_google_token') || null;
 
 // Initialize EmailJS (if configured)
 if (CONFIG.EMAILJS_PUBLIC_KEY && typeof emailjs !== 'undefined') {
@@ -1203,6 +1595,24 @@ function getCurrentSession() {
 /* =======================================
    AUTHENTICATION
    ======================================= */
+function buildSession(rec) {
+    const f = rec.fields;
+    return {
+        username: f['Username'] || '',
+        displayName: f['Display Name'] || '',
+        recordId: rec.id,
+        role: f['Role'] || 'User',
+        mfaEnabled: !!(f['MFA Secret']),
+        permissions: {
+            forms: !!f['Allow Forms'],
+            team: !!f['Allow Team'],
+            forecast: !!f['Allow Forecast'],
+            runway: !!f['Allow Runway'],
+            clients: !!f['Allow Clients'],
+        }
+    };
+}
+
 document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('login-btn');
@@ -1221,22 +1631,18 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
         if (data.records && data.records.length > 0) {
             const rec = data.records[0];
-            const f = rec.fields;
-            const session = {
-                username: f['Username'] || username,
-                displayName: f['Display Name'] || '',
-                recordId: rec.id,
-                role: f['Role'] || 'User',
-                permissions: {
-                    forms: !!f['Allow Forms'],
-                    team: !!f['Allow Team'],
-                    forecast: !!f['Allow Forecast'],
-                    runway: !!f['Allow Runway'],
-                    clients: !!f['Allow Clients'],
-                }
-            };
-            sessionStorage.setItem('toa_session', JSON.stringify(session));
-            showPortal(session);
+            const mfaSecret = rec.fields['MFA Secret'] || '';
+
+            if (mfaSecret) {
+                // MFA enabled — park user and show verification screen
+                pendingMfaUser = { record: rec, secret: mfaSecret };
+                showMfaVerification();
+            } else {
+                // No MFA — proceed as before
+                const session = buildSession(rec);
+                sessionStorage.setItem('toa_session', JSON.stringify(session));
+                showPortal(session);
+            }
         } else {
             errorEl.textContent = 'Invalid email address or password.';
         }
@@ -1251,6 +1657,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
 function showPortal(session) {
     document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('mfa-screen').style.display = 'none';
     document.getElementById('portal').style.display = 'block';
     document.getElementById('user-badge').textContent = `Signed in as ${session.displayName || session.username}`;
 
@@ -1272,6 +1679,8 @@ function showPortal(session) {
         const tabKey = tab.dataset.tab;
         if (tabKey === 'admin') {
             tab.style.display = isAdmin ? '' : 'none';
+        } else if (tabKey === 'meetings') {
+            tab.style.display = ''; // Always visible to all users
         } else {
             tab.style.display = (isAdmin || tabPermMap[tabKey]) ? '' : 'none';
         }
@@ -1288,11 +1697,16 @@ function showPortal(session) {
     }
 
     loadSignatures();
+    updateMfaHeaderButton(session);
 }
 
 function logout() {
     sessionStorage.removeItem('toa_session');
+    sessionStorage.removeItem('toa_google_token');
+    pendingMfaUser = null;
+    googleAccessToken = null;
     document.getElementById('portal').style.display = 'none';
+    document.getElementById('mfa-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
     document.getElementById('username').value = '';
     document.getElementById('password').value = '';
@@ -1318,6 +1732,12 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
         // Load admin users when admin tab is activated
         if (tab.dataset.tab === 'admin') {
             loadAdminUsers();
+        }
+
+        // Load meetings when meetings tab is activated
+        if (tab.dataset.tab === 'meetings') {
+            loadMeetings();
+            updateGoogleMeetUI();
         }
     });
 });
@@ -1481,6 +1901,7 @@ async function loadAdminUsers() {
             const check = '<span class="perm-check">&#10003;</span>';
             const cross = '<span class="perm-cross">&#8212;</span>';
 
+            const hasMfa = !!(f['MFA Secret']);
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><strong>${escapeHtml(displayName)}</strong></td>
@@ -1492,8 +1913,10 @@ async function loadAdminUsers() {
                 <td>${f['Allow Forecast'] ? check : cross}</td>
                 <td>${f['Allow Runway'] ? check : cross}</td>
                 <td>${f['Allow Clients'] ? check : cross}</td>
+                <td>${hasMfa ? '<span class="perm-check">&#10003;</span>' : cross}</td>
                 <td>
                     <button class="btn-edit" onclick="openEditModal('${rec.id}')">Edit</button>
+                    ${hasMfa ? `<button class="btn-delete" onclick="resetUserMfa('${rec.id}', '${escapeHtml(username)}')" style="background:#f57c00;">Reset MFA</button>` : ''}
                     <button class="btn-delete" onclick="deleteUser('${rec.id}', '${escapeHtml(username)}')">Delete</button>
                 </td>
             `;
@@ -1820,6 +2243,730 @@ async function saveChangePassword() {
 }
 
 /* =======================================
+   MFA - VERIFICATION (LOGIN)
+   ======================================= */
+function showMfaVerification() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('mfa-screen').style.display = 'flex';
+    document.getElementById('mfa-code').value = '';
+    document.getElementById('mfa-error').textContent = '';
+    setTimeout(() => document.getElementById('mfa-code').focus(), 100);
+}
+
+function cancelMfa() {
+    pendingMfaUser = null;
+    document.getElementById('mfa-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+}
+
+document.getElementById('mfa-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const code = document.getElementById('mfa-code').value.trim();
+    const errorEl = document.getElementById('mfa-error');
+    const btn = document.getElementById('mfa-btn');
+
+    if (!pendingMfaUser) {
+        errorEl.textContent = 'Session expired. Please sign in again.';
+        return;
+    }
+
+    if (!/^\d{6}$/.test(code)) {
+        errorEl.textContent = 'Enter a valid 6-digit code.';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Verifying...';
+    errorEl.textContent = '';
+
+    try {
+        const totp = new OTPAuth.TOTP({
+            issuer: 'MYTOA Portal',
+            label: pendingMfaUser.record.fields['Username'] || '',
+            algorithm: 'SHA1',
+            digits: 6,
+            period: 30,
+            secret: OTPAuth.Secret.fromBase32(pendingMfaUser.secret)
+        });
+
+        const delta = totp.validate({ token: code, window: 1 });
+
+        if (delta === null) {
+            errorEl.textContent = 'Invalid code. Please try again.';
+            return;
+        }
+
+        // Code valid — create session and proceed
+        const session = buildSession(pendingMfaUser.record);
+        sessionStorage.setItem('toa_session', JSON.stringify(session));
+        pendingMfaUser = null;
+
+        document.getElementById('mfa-screen').style.display = 'none';
+        showPortal(session);
+    } catch (err) {
+        console.error('MFA verification error:', err);
+        errorEl.textContent = 'Verification failed. Please try again.';
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Verify';
+    }
+});
+
+/* =======================================
+   MFA - SETUP
+   ======================================= */
+let mfaSetupSecret = null;
+
+function updateMfaHeaderButton(session) {
+    const btn = document.getElementById('btn-mfa-header');
+    if (session.mfaEnabled) {
+        btn.textContent = 'MFA: On';
+        btn.style.borderColor = 'var(--toa-accent)';
+    } else {
+        btn.textContent = 'Set Up MFA';
+        btn.style.borderColor = '';
+    }
+    btn.style.display = '';
+}
+
+function openMfaSettings() {
+    const session = getCurrentSession();
+    if (!session) return;
+
+    if (typeof OTPAuth === 'undefined') {
+        showToast('MFA library failed to load. Please refresh the page.');
+        return;
+    }
+
+    if (session.mfaEnabled) {
+        // Already enabled — offer to disable
+        document.getElementById('mfa-disable-code').value = '';
+        document.getElementById('mfa-disable-error').textContent = '';
+        document.getElementById('modal-mfa-disable').classList.add('active');
+    } else {
+        // Not enabled — start setup
+        startMfaSetup();
+    }
+}
+
+function startMfaSetup() {
+    const session = getCurrentSession();
+    if (!session) return;
+
+    // Generate a new TOTP secret
+    const totp = new OTPAuth.TOTP({
+        issuer: 'MYTOA Portal',
+        label: session.username,
+        algorithm: 'SHA1',
+        digits: 6,
+        period: 30,
+        secret: new OTPAuth.Secret({ size: 20 })
+    });
+
+    mfaSetupSecret = totp.secret.base32;
+
+    // Display the secret for manual entry
+    document.getElementById('mfa-secret-display').textContent = mfaSetupSecret;
+
+    // Generate QR code
+    const otpauthUri = totp.toString();
+    const canvas = document.getElementById('mfa-qr-canvas');
+    QRCode.toCanvas(canvas, otpauthUri, { width: 200, margin: 2 }, function(error) {
+        if (error) console.error('QR generation error:', error);
+    });
+
+    // Reset UI state
+    document.getElementById('mfa-setup-code').value = '';
+    document.getElementById('mfa-setup-error').textContent = '';
+    document.getElementById('mfa-setup-step1').style.display = 'block';
+    document.getElementById('mfa-setup-step2').style.display = 'none';
+
+    document.getElementById('modal-mfa-setup').classList.add('active');
+}
+
+async function verifyMfaSetup() {
+    const code = document.getElementById('mfa-setup-code').value.trim();
+    const errorEl = document.getElementById('mfa-setup-error');
+    const btn = document.getElementById('btn-verify-mfa-setup');
+
+    if (!/^\d{6}$/.test(code)) {
+        errorEl.textContent = 'Enter a valid 6-digit code.';
+        return;
+    }
+
+    // Validate the code against the setup secret
+    const totp = new OTPAuth.TOTP({
+        issuer: 'MYTOA Portal',
+        label: '',
+        algorithm: 'SHA1',
+        digits: 6,
+        period: 30,
+        secret: OTPAuth.Secret.fromBase32(mfaSetupSecret)
+    });
+
+    const delta = totp.validate({ token: code, window: 1 });
+
+    if (delta === null) {
+        errorEl.textContent = 'Invalid code. Make sure the code is current and try again.';
+        return;
+    }
+
+    // Code is valid — save the secret to Airtable
+    btn.disabled = true;
+    btn.textContent = 'Enabling...';
+    errorEl.textContent = '';
+
+    try {
+        const session = getCurrentSession();
+        const res = await fetch(`${API}/${CONFIG.USERS_TABLE}/${session.recordId}`, {
+            method: 'PATCH',
+            headers: writeHeaders,
+            body: JSON.stringify({ fields: { 'MFA Secret': mfaSetupSecret } })
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error?.message || 'Failed to enable MFA');
+        }
+
+        // Update local session
+        session.mfaEnabled = true;
+        sessionStorage.setItem('toa_session', JSON.stringify(session));
+        updateMfaHeaderButton(session);
+
+        // Show success step
+        document.getElementById('mfa-setup-step1').style.display = 'none';
+        document.getElementById('mfa-setup-step2').style.display = 'block';
+
+        mfaSetupSecret = null;
+        showToast('Two-factor authentication enabled.');
+    } catch (err) {
+        console.error('MFA setup error:', err);
+        errorEl.textContent = 'Error: ' + err.message;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enable MFA';
+    }
+}
+
+function closeMfaSetupModal() {
+    document.getElementById('modal-mfa-setup').classList.remove('active');
+    mfaSetupSecret = null;
+}
+
+/* =======================================
+   MFA - DISABLE
+   ======================================= */
+async function confirmDisableMfa() {
+    const code = document.getElementById('mfa-disable-code').value.trim();
+    const errorEl = document.getElementById('mfa-disable-error');
+    const btn = document.getElementById('btn-confirm-disable-mfa');
+    const session = getCurrentSession();
+
+    if (!session) return;
+
+    if (!/^\d{6}$/.test(code)) {
+        errorEl.textContent = 'Enter a valid 6-digit code.';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Disabling...';
+    errorEl.textContent = '';
+
+    try {
+        // Fetch the current secret from Airtable to verify the code
+        const res = await fetch(
+            `${API}/${CONFIG.USERS_TABLE}/${session.recordId}`,
+            { headers }
+        );
+        const data = await res.json();
+        const secret = data.fields?.['MFA Secret'];
+
+        if (!secret) {
+            session.mfaEnabled = false;
+            sessionStorage.setItem('toa_session', JSON.stringify(session));
+            updateMfaHeaderButton(session);
+            closeMfaDisableModal();
+            showToast('MFA is already disabled.');
+            return;
+        }
+
+        // Verify the code
+        const totp = new OTPAuth.TOTP({
+            issuer: 'MYTOA Portal',
+            label: '',
+            algorithm: 'SHA1',
+            digits: 6,
+            period: 30,
+            secret: OTPAuth.Secret.fromBase32(secret)
+        });
+
+        const delta = totp.validate({ token: code, window: 1 });
+
+        if (delta === null) {
+            errorEl.textContent = 'Invalid code. Please try again.';
+            return;
+        }
+
+        // Code valid — clear MFA secret in Airtable
+        const clearRes = await fetch(`${API}/${CONFIG.USERS_TABLE}/${session.recordId}`, {
+            method: 'PATCH',
+            headers: writeHeaders,
+            body: JSON.stringify({ fields: { 'MFA Secret': '' } })
+        });
+
+        if (!clearRes.ok) {
+            throw new Error('Failed to disable MFA');
+        }
+
+        session.mfaEnabled = false;
+        sessionStorage.setItem('toa_session', JSON.stringify(session));
+        updateMfaHeaderButton(session);
+        closeMfaDisableModal();
+        showToast('Two-factor authentication has been disabled.');
+    } catch (err) {
+        console.error('MFA disable error:', err);
+        errorEl.textContent = 'Error: ' + err.message;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Disable MFA';
+    }
+}
+
+function closeMfaDisableModal() {
+    document.getElementById('modal-mfa-disable').classList.remove('active');
+}
+
+/* =======================================
+   ADMIN - RESET USER MFA
+   ======================================= */
+async function resetUserMfa(recordId, username) {
+    if (!confirm(`Reset MFA for "${username}"? They will need to set up MFA again.`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API}/${CONFIG.USERS_TABLE}/${recordId}`, {
+            method: 'PATCH',
+            headers: writeHeaders,
+            body: JSON.stringify({ fields: { 'MFA Secret': '' } })
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error?.message || 'Failed to reset MFA');
+        }
+
+        showToast(`MFA reset for "${username}".`);
+        loadAdminUsers();
+    } catch (err) {
+        console.error('MFA reset error:', err);
+        showToast('Error: ' + err.message);
+    }
+}
+
+/* =======================================
+   MY MEETINGS - LOAD & DISPLAY
+   ======================================= */
+async function loadMeetings() {
+    const session = getCurrentSession();
+    if (!session) return;
+    if (!CONFIG.MEETINGS_TABLE) {
+        document.getElementById('meetings-empty').style.display = 'block';
+        return;
+    }
+
+    const loading = document.getElementById('meetings-loading');
+    const emptyState = document.getElementById('meetings-empty');
+    const tableSection = document.getElementById('meetings-table-section');
+    const tbody = document.getElementById('meetings-tbody');
+
+    loading.style.display = 'flex';
+    emptyState.style.display = 'none';
+    tableSection.style.display = 'none';
+    tbody.innerHTML = '';
+
+    try {
+        const filter = encodeURIComponent(`{User Email}="${session.username}"`);
+        let allRecords = [];
+        let offset = null;
+
+        do {
+            let url = `${API}/${CONFIG.MEETINGS_TABLE}?filterByFormula=${filter}&sort%5B0%5D%5Bfield%5D=Date&sort%5B0%5D%5Bdirection%5D=desc`;
+            if (offset) url += `&offset=${offset}`;
+            const res = await fetch(url, { headers });
+            const data = await res.json();
+            allRecords = allRecords.concat(data.records || []);
+            offset = data.offset || null;
+        } while (offset);
+
+        meetingsData = allRecords;
+
+        if (allRecords.length === 0) {
+            emptyState.style.display = 'block';
+        } else {
+            tableSection.style.display = 'block';
+            allRecords.forEach((rec, idx) => {
+                const f = rec.fields;
+                const date = f['Date'] || '';
+                const title = f['Title'] || 'Untitled Meeting';
+                const source = f['Source'] || 'Manual';
+                const duration = f['Duration'] || '\u2014';
+
+                const sourceClass = source === 'Google Meet' ? 'google-meet'
+                    : source === 'Fyxer.ai' ? 'fyxer'
+                    : source === 'Plaud' ? 'plaud'
+                    : 'manual';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${escapeHtml(date)}</td>
+                    <td><strong>${escapeHtml(title)}</strong></td>
+                    <td><span class="source-badge ${sourceClass}">${escapeHtml(source)}</span></td>
+                    <td>${escapeHtml(duration)}</td>
+                    <td>
+                        <button class="btn-edit" onclick="viewTranscript(${idx})">View</button>
+                        <button class="btn-delete" onclick="deleteMeeting('${rec.id}', '${escapeHtml(title)}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch (err) {
+        console.error('Failed to load meetings:', err);
+        showToast('Failed to load meetings.');
+        emptyState.style.display = 'block';
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+
+/* =======================================
+   MY MEETINGS - VIEW TRANSCRIPT
+   ======================================= */
+function viewTranscript(idx) {
+    const rec = meetingsData[idx];
+    if (!rec) return;
+    const f = rec.fields;
+
+    document.getElementById('view-transcript-title').textContent = f['Title'] || 'Untitled Meeting';
+    document.getElementById('view-transcript-date').textContent = f['Date'] || '\u2014';
+    document.getElementById('view-transcript-source').textContent = f['Source'] || 'Manual';
+    document.getElementById('view-transcript-duration').textContent = f['Duration'] || '\u2014';
+
+    const participants = f['Participants'] || '';
+    const participantsSection = document.getElementById('view-transcript-participants-section');
+    if (participants) {
+        document.getElementById('view-transcript-participants-value').textContent = participants;
+        participantsSection.style.display = 'block';
+    } else {
+        participantsSection.style.display = 'none';
+    }
+
+    document.getElementById('view-transcript-content').textContent = f['Transcript'] || '(No transcript content)';
+    document.getElementById('modal-view-transcript').classList.add('active');
+}
+
+function closeViewTranscriptModal() {
+    document.getElementById('modal-view-transcript').classList.remove('active');
+}
+
+function copyTranscriptContent() {
+    const content = document.getElementById('view-transcript-content').textContent;
+    navigator.clipboard.writeText(content).then(() => {
+        showToast('Transcript copied to clipboard!');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = content;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Transcript copied to clipboard!');
+    });
+}
+
+/* =======================================
+   MY MEETINGS - MANUAL UPLOAD
+   ======================================= */
+function openUploadTranscriptModal() {
+    document.getElementById('transcript-title').value = '';
+    document.getElementById('transcript-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('transcript-duration').value = '';
+    document.getElementById('transcript-participants').value = '';
+    document.getElementById('transcript-content').value = '';
+    document.getElementById('modal-upload-transcript').classList.add('active');
+}
+
+function closeUploadTranscriptModal() {
+    document.getElementById('modal-upload-transcript').classList.remove('active');
+}
+
+async function saveManualTranscript() {
+    const btn = document.getElementById('btn-save-transcript');
+    const session = getCurrentSession();
+    if (!session) { showToast('Session expired. Please sign in again.'); return; }
+    if (!CONFIG.MEETINGS_TABLE) { showToast('Meetings table is not configured.'); return; }
+
+    const title = document.getElementById('transcript-title').value.trim();
+    const date = document.getElementById('transcript-date').value;
+    const duration = document.getElementById('transcript-duration').value.trim();
+    const participants = document.getElementById('transcript-participants').value.trim();
+    const content = document.getElementById('transcript-content').value.trim();
+
+    if (!title) { showToast('Meeting title is required.'); return; }
+    if (!date) { showToast('Meeting date is required.'); return; }
+    if (!content) { showToast('Transcript content is required.'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try {
+        const fields = {
+            'Title': title,
+            'Date': date,
+            'Transcript': content,
+            'Source': 'Manual',
+            'User Email': session.username,
+        };
+        if (duration) fields['Duration'] = duration;
+        if (participants) fields['Participants'] = participants;
+
+        const res = await fetch(`${API}/${CONFIG.MEETINGS_TABLE}`, {
+            method: 'POST',
+            headers: writeHeaders,
+            body: JSON.stringify({ fields })
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error?.message || 'Failed to save transcript');
+        }
+
+        showToast('Transcript saved successfully.');
+        closeUploadTranscriptModal();
+        loadMeetings();
+    } catch (err) {
+        console.error('Save transcript error:', err);
+        showToast('Error: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Transcript';
+    }
+}
+
+/* =======================================
+   MY MEETINGS - DELETE
+   ======================================= */
+async function deleteMeeting(recordId, title) {
+    if (!confirm(`Delete transcript "${title}"? This cannot be undone.`)) return;
+
+    try {
+        const res = await fetch(`${API}/${CONFIG.MEETINGS_TABLE}/${recordId}`, {
+            method: 'DELETE',
+            headers: writeHeaders
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error?.message || 'Failed to delete transcript');
+        }
+
+        showToast(`Transcript "${title}" deleted.`);
+        loadMeetings();
+    } catch (err) {
+        console.error('Delete meeting error:', err);
+        showToast('Error: ' + err.message);
+    }
+}
+
+/* =======================================
+   MY MEETINGS - GOOGLE MEET OAUTH
+   ======================================= */
+function connectGoogleMeet() {
+    if (!CONFIG.GOOGLE_CLIENT_ID) {
+        showToast('Google OAuth is not configured yet. Set GOOGLE_CLIENT_ID in CONFIG.');
+        return;
+    }
+
+    if (typeof google === 'undefined' || !google.accounts) {
+        showToast('Google Identity Services failed to load. Please refresh.');
+        return;
+    }
+
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CONFIG.GOOGLE_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/drive.readonly',
+        callback: (response) => {
+            if (response.error) {
+                console.error('Google OAuth error:', response);
+                showToast('Google sign-in failed: ' + (response.error_description || response.error));
+                return;
+            }
+            googleAccessToken = response.access_token;
+            sessionStorage.setItem('toa_google_token', googleAccessToken);
+            updateGoogleMeetUI();
+            showToast('Google Meet connected successfully!');
+        },
+    });
+
+    tokenClient.requestAccessToken();
+}
+
+function disconnectGoogleMeet() {
+    if (googleAccessToken && typeof google !== 'undefined' && google.accounts) {
+        google.accounts.oauth2.revoke(googleAccessToken, () => {
+            console.log('Google token revoked');
+        });
+    }
+    googleAccessToken = null;
+    sessionStorage.removeItem('toa_google_token');
+    updateGoogleMeetUI();
+    showToast('Google Meet disconnected.');
+}
+
+function updateGoogleMeetUI() {
+    const statusEl = document.getElementById('google-meet-status');
+    const btnConnect = document.getElementById('btn-connect-google');
+    const btnSync = document.getElementById('btn-sync-google');
+
+    if (!statusEl || !btnConnect) return;
+
+    if (googleAccessToken) {
+        statusEl.textContent = 'Connected';
+        statusEl.classList.add('connected');
+        btnConnect.textContent = 'Disconnect';
+        btnConnect.classList.add('connected');
+        btnConnect.onclick = disconnectGoogleMeet;
+        if (btnSync) btnSync.style.display = '';
+    } else {
+        statusEl.textContent = 'Not connected';
+        statusEl.classList.remove('connected');
+        btnConnect.textContent = 'Connect';
+        btnConnect.classList.remove('connected');
+        btnConnect.onclick = connectGoogleMeet;
+        if (btnSync) btnSync.style.display = 'none';
+    }
+}
+
+/* =======================================
+   MY MEETINGS - GOOGLE MEET SYNC
+   ======================================= */
+async function syncGoogleMeetTranscripts() {
+    if (!googleAccessToken) {
+        showToast('Please connect Google Meet first.');
+        return;
+    }
+    if (!CONFIG.MEETINGS_TABLE) {
+        showToast('Meetings table is not configured.');
+        return;
+    }
+
+    const btn = document.getElementById('btn-sync-google');
+    const session = getCurrentSession();
+    if (!session) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Syncing...';
+
+    try {
+        // Search for Google Meet transcript docs in Drive
+        const query = encodeURIComponent(
+            "mimeType='application/vnd.google-apps.document' and (name contains 'Transcript' or name contains 'Meeting transcript')"
+        );
+        const driveRes = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name,createdTime,modifiedTime)&orderBy=modifiedTime desc&pageSize=50`,
+            { headers: { 'Authorization': `Bearer ${googleAccessToken}` } }
+        );
+
+        if (driveRes.status === 401) {
+            googleAccessToken = null;
+            sessionStorage.removeItem('toa_google_token');
+            updateGoogleMeetUI();
+            showToast('Google session expired. Please reconnect.');
+            return;
+        }
+
+        const driveData = await driveRes.json();
+        const files = driveData.files || [];
+
+        if (files.length === 0) {
+            showToast('No Google Meet transcripts found in your Drive.');
+            return;
+        }
+
+        // Get existing external IDs to avoid duplicates
+        const existingFilter = encodeURIComponent(
+            `AND({User Email}="${session.username}", {Source}="Google Meet")`
+        );
+        const existingRes = await fetch(
+            `${API}/${CONFIG.MEETINGS_TABLE}?filterByFormula=${existingFilter}&fields%5B%5D=External+ID`,
+            { headers }
+        );
+        const existingData = await existingRes.json();
+        const existingIds = new Set(
+            (existingData.records || []).map(r => r.fields['External ID']).filter(Boolean)
+        );
+
+        let imported = 0;
+
+        for (const file of files) {
+            if (existingIds.has(file.id)) continue;
+
+            // Export the Google Doc as plain text
+            const exportRes = await fetch(
+                `https://www.googleapis.com/drive/v3/files/${file.id}/export?mimeType=text/plain`,
+                { headers: { 'Authorization': `Bearer ${googleAccessToken}` } }
+            );
+
+            if (!exportRes.ok) {
+                console.warn(`Failed to export file ${file.id}:`, exportRes.status);
+                continue;
+            }
+
+            let transcriptText = await exportRes.text();
+            // Truncate if exceeds Airtable limit (100k chars)
+            if (transcriptText.length > 99000) {
+                transcriptText = transcriptText.substring(0, 99000) + '\n\n[Transcript truncated due to length]';
+            }
+
+            const fileDate = (file.createdTime || '').split('T')[0] || '';
+
+            const fields = {
+                'Title': file.name,
+                'Date': fileDate,
+                'Transcript': transcriptText,
+                'Source': 'Google Meet',
+                'User Email': session.username,
+                'External ID': file.id,
+            };
+
+            const saveRes = await fetch(`${API}/${CONFIG.MEETINGS_TABLE}`, {
+                method: 'POST',
+                headers: writeHeaders,
+                body: JSON.stringify({ fields })
+            });
+
+            if (saveRes.ok) imported++;
+        }
+
+        if (imported > 0) {
+            showToast(`Imported ${imported} new transcript${imported > 1 ? 's' : ''} from Google Meet.`);
+            loadMeetings();
+        } else {
+            showToast('All Google Meet transcripts are already imported.');
+        }
+    } catch (err) {
+        console.error('Sync Google Meet error:', err);
+        showToast('Sync failed: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '&#128260; Sync from Google Meet';
+    }
+}
+
+/* =======================================
    USER CREATED MODAL - NOTIFICATIONS
    ======================================= */
 function closeUserCreatedModal() {
@@ -1893,6 +3040,18 @@ document.addEventListener('keydown', (e) => {
         if (document.getElementById('modal-user-created').classList.contains('active')) {
             closeUserCreatedModal();
         }
+        if (document.getElementById('modal-mfa-setup').classList.contains('active')) {
+            closeMfaSetupModal();
+        }
+        if (document.getElementById('modal-mfa-disable').classList.contains('active')) {
+            closeMfaDisableModal();
+        }
+        if (document.getElementById('modal-upload-transcript').classList.contains('active')) {
+            closeUploadTranscriptModal();
+        }
+        if (document.getElementById('modal-view-transcript').classList.contains('active')) {
+            closeViewTranscriptModal();
+        }
     }
 });
 
@@ -1911,6 +3070,30 @@ document.getElementById('modal-change-pw').addEventListener('click', (e) => {
 document.getElementById('modal-user-created').addEventListener('click', (e) => {
     if (e.target === document.getElementById('modal-user-created')) {
         closeUserCreatedModal();
+    }
+});
+
+document.getElementById('modal-mfa-setup').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-mfa-setup')) {
+        closeMfaSetupModal();
+    }
+});
+
+document.getElementById('modal-mfa-disable').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-mfa-disable')) {
+        closeMfaDisableModal();
+    }
+});
+
+document.getElementById('modal-upload-transcript').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-upload-transcript')) {
+        closeUploadTranscriptModal();
+    }
+});
+
+document.getElementById('modal-view-transcript').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-view-transcript')) {
+        closeViewTranscriptModal();
     }
 });
 
